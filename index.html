@@ -70,13 +70,13 @@
       50% { color: #00aaff; }
       100% { color: #3399ff; }
     }
-    .rocket {
-      font-size: 60px;
-      animation: float 1s infinite alternate;
+    .baby-line {
+      font-size: 32px;
+      margin: 10px;
     }
-    @keyframes float {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-10px); }
+    .baby-word {
+      font-size: 64px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -87,13 +87,14 @@
     <div class="grid-labels" id="board-grid"></div>
   </div>
   <script>
-    const phrase = "EL BEBÉ QUE ESPERAMOS ES NIÑ";
-    const fullPhrase = phrase + "O";
+    const phrase = "HOLA MI QUERIDA FAMILIA, SOY NIÑ";
+    const fullPhrase = "HOLA MI QUERIDA FAMILIA, SOY UN:";
+    const finalWord = "NIÑO";
     const boardGrid = document.getElementById("board-grid");
     const revealedPhrase = document.getElementById("revealed-phrase");
 
-    const totalPairs = Math.ceil(fullPhrase.replace(/ /g, "").length / 2);
-    const symbols = ["🍎", "🍌", "🍇", "🍓", "🍍", "🥝", "🍒", "🍉", "🍑", "🥭", "🍋", "🍏", "🥥", "🍈"];
+    const totalPairs = Math.ceil((phrase.replace(/ /g, "").length + 1) / 2);
+    const symbols = ["🍎", "🍌", "🍇", "🍓", "🍍", "🥝", "🍒", "🍉", "🍑", "🥭", "🍋", "🍏", "🥥", "🍈", "🍊", "🍕", "🍪"];
     let cards = symbols.slice(0, totalPairs).flatMap(s => [s, s]).sort(() => 0.5 - Math.random());
 
     let flipped = [];
@@ -120,7 +121,7 @@
           const index = (r - 1) * cols + (c - 1);
           const card = document.createElement("div");
           card.className = "card";
-          card.dataset.symbol = cards[index];
+          card.dataset.symbol = cards[index] || "";
           card.dataset.index = index;
           card.innerText = "";
           card.addEventListener("click", () => flipCard(card));
@@ -131,7 +132,7 @@
     }
 
     function flipCard(card) {
-      if (flipped.length === 2 || card.classList.contains("flipped")) return;
+      if (flipped.length === 2 || card.classList.contains("flipped") || !card.dataset.symbol) return;
       card.classList.add("flipped");
       card.innerText = card.dataset.symbol;
       flipped.push(card);
@@ -162,14 +163,11 @@
       const overlay = document.createElement("div");
       overlay.className = "celebration";
       overlay.innerHTML = `
-        <div class="rocket">🚀🚀🚀</div>
-        <div style="font-size: 48px;">${fullPhrase}</div>
-        <div class="rocket">🚀🚀🚀</div>
+        <div class="baby-line">👶 ${fullPhrase} 👶</div>
+        <div class="baby-word">${finalWord}</div>
       `;
       document.body.appendChild(overlay);
     }
   </script>
 </body>
 </html>
-
-
