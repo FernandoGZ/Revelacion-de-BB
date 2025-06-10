@@ -167,4 +167,14 @@
     function showCelebration() {
       const overlay = document.createElement("div");
       overlay.className = "celebration";
+      overlay.innerHTML = `
+        <div class="rocket">🚀🚀🚀</div>
+        <div>${phrase}</div>
+        <div class="rocket">🚀🚀🚀</div>
+      `;
+      document.body.appendChild(overlay);
+    }
+  </script>
+</body>
+</html>
 
