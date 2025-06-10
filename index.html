@@ -1,15 +1,108 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Revelación del Bebé</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Revelación del Bebé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #fefefe;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        #phrase {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(6, 80px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            background-color: #eee;
+            padding: 10px;
+            border: 2px dashed #aaa;
+        }
+        .card {
+            width: 80px;
+            height: 80px;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .card.flipped {
+            background-color: #fff;
+        }
+        #final-message {
+            font-size: 48px;
+            color: #0077cc;
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Juego de Revelación del Bebé</h1>
-    <div id="phrase">Frase: <span id="revealed-phrase"></span></div>
-    <div id="board"></div>
-    <script src="script.js"></script>
+    <h1>Juego de Revelación del Bebé</h1>
+    <div id="phrase">Frase: <span id="revealed-phrase"></span></div>
+    <div id="board"></div>
+    <div id="final-message"></div>
+    <script>
+        const phrase = "EL BEBÉ ESPERADO ES NIÑO";
+        const board = document.getElementById("board");
+        const revealedPhrase = document.getElementById("revealed-phrase");
+        const finalMessage = document.getElementById("final-message");
+
+        const totalPairs = Math.ceil(phrase.replace(/ /g, "").length / 2);
+        const symbols = ["🍎", "🍌", "🍇", "🍓", "🍍", "🥝", "🍒", "🍉", "🍑", "🥭", "🍋", "🍏", "🥥", "🍈"];
+        let cards = symbols.slice(0, totalPairs).flatMap(s => [s, s]).sort(() => 0.5 - Math.random());
+
+        let flipped = [];
+        let matched = 0;
+
+        cards.forEach((symbol, index) => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.dataset.symbol = symbol;
+            card.dataset.index = index;
+            card.innerText = "";
+            card.addEventListener("click", () => flipCard(card));
+            board.appendChild(card);
+        });
+
+        function flipCard(card) {
+            if (flipped.length === 2 || card.classList.contains("flipped")) return;
+            card.classList.add("flipped");
+            card.innerText = card.dataset.symbol;
+            flipped.push(card);
+
+            if (flipped.length === 2) {
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        function checkMatch() {
+            const [a, b] = flipped;
+            if (a.dataset.symbol === b.dataset.symbol) {
+                matched++;
+                revealedPhrase.innerText = phrase.slice(0, matched * 2);
+                if (matched * 2 >= phrase.replace(/ /g, "").length) {
+                    finalMessage.innerText = phrase;
+                }
+            } else {
+                a.classList.remove("flipped");
+                b.classList.remove("flipped");
+                a.innerText = "";
+                b.innerText = "";
+            }
+            flipped = [];
+        }
+    </script>
 </body>
 </html>
+
