@@ -34,3 +34,10 @@ body {
     color: #0077cc;
     margin-top: 40px;
 }
+
+#board {
+    background-color: #eee;
+    padding: 10px;
+    border: 2px dashed #aaa;
+}
+
