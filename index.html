@@ -1,108 +1,170 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Revelación del Bebé</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #fefefe;
-        }
-        h1 {
-            margin-top: 20px;
-        }
-        #phrase {
-            margin-top: 20px;
-            font-size: 20px;
-        }
-        #board {
-            display: grid;
-            grid-template-columns: repeat(6, 80px);
-            grid-gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-            background-color: #eee;
-            padding: 10px;
-            border: 2px dashed #aaa;
-        }
-        .card {
-            width: 80px;
-            height: 80px;
-            background-color: #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            border-radius: 8px;
-        }
-        .card.flipped {
-            background-color: #fff;
-        }
-        #final-message {
-            font-size: 48px;
-            color: #0077cc;
-            margin-top: 40px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Revelación del Bebé</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #fefefe;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #phrase {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .board-container {
+      display: inline-block;
+      margin-top: 20px;
+      position: relative;
+    }
+    .grid-labels {
+      display: grid;
+      grid-template-columns: 30px repeat(6, 80px);
+      grid-template-rows: 30px repeat(6, 80px);
+      gap: 10px;
+    }
+    .label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .empty {
+      background: transparent;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .card.flipped {
+      background-color: #fff;
+    }
+    #final-message {
+      font-size: 48px;
+      color: #0077cc;
+      margin-top: 40px;
+    }
+    .celebration {
+      animation: colorChange 1s infinite alternate;
+      background-color: white;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    @keyframes colorChange {
+      0% { color: #0077cc; }
+      50% { color: #00aaff; }
+      100% { color: #3399ff; }
+    }
+    .rocket {
+      font-size: 60px;
+      animation: float 1s infinite alternate;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+  </style>
 </head>
 <body>
-    <h1>Revelación del sexo del Bebé</h1>
-    <div id="phrase">Frase: <span id="revealed-phrase"></span></div>
-    <div id="board"></div>
-    <div id="final-message"></div>
-    <script>
-        const phrase = "EL BEBÉ ESPERADO ES NIÑO";
-        const board = document.getElementById("board");
-        const revealedPhrase = document.getElementById("revealed-phrase");
-        const finalMessage = document.getElementById("final-message");
+  <h1>Juego de Revelación del Bebé</h1>
+  <div id="phrase">Frase: <span id="revealed-phrase"></span></div>
+  <div class="board-container">
+    <div class="grid-labels" id="board-grid"></div>
+  </div>
+  <div id="final-message"></div>
+  <script>
+    const phrase = "EL BEBÉ QUE ESPERAMOS ES UN NIÑO";
+    const boardGrid = document.getElementById("board-grid");
+    const revealedPhrase = document.getElementById("revealed-phrase");
+    const finalMessage = document.getElementById("final-message");
 
-        const totalPairs = Math.ceil(phrase.replace(/ /g, "").length / 2);
-        const symbols = ["🍎", "🍌", "🍇", "🍓", "🍍", "🥝", "🍒", "🍉", "🍑", "🥭", "🍋", "🍏", "🥥", "🍈"];
-        let cards = symbols.slice(0, totalPairs).flatMap(s => [s, s]).sort(() => 0.5 - Math.random());
+    const totalPairs = Math.ceil(phrase.replace(/ /g, "").length / 2);
+    const symbols = ["🍎", "🍌", "🍇", "🍓", "🍍", "🥝", "🍒", "🍉", "🍑", "🥭", "🍋", "🍏", "🥥", "🍈"];
+    let cards = symbols.slice(0, totalPairs).flatMap(s => [s, s]).sort(() => 0.5 - Math.random());
 
-        let flipped = [];
-        let matched = 0;
+    let flipped = [];
+    let matched = 0;
 
-        cards.forEach((symbol, index) => {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.dataset.symbol = symbol;
-            card.dataset.index = index;
-            card.innerText = "";
-            card.addEventListener("click", () => flipCard(card));
-            board.appendChild(card);
-        });
+    const rows = 6;
+    const cols = 6;
 
-        function flipCard(card) {
-            if (flipped.length === 2 || card.classList.contains("flipped")) return;
-            card.classList.add("flipped");
-            card.innerText = card.dataset.symbol;
-            flipped.push(card);
+    const letters = ["", "1", "2", "3", "4", "5", "6"];
+    const alpha = ["A", "B", "C", "D", "E", "F"];
 
-            if (flipped.length === 2) {
-                setTimeout(checkMatch, 800);
-            }
+    for (let r = 0; r <= rows; r++) {
+      for (let c = 0; c <= cols; c++) {
+        const cell = document.createElement("div");
+        if (r === 0 && c === 0) {
+          cell.className = "label empty";
+        } else if (r === 0) {
+          cell.className = "label";
+          cell.innerText = letters[c];
+        } else if (c === 0) {
+          cell.className = "label";
+          cell.innerText = alpha[r - 1];
+        } else {
+          const index = (r - 1) * cols + (c - 1);
+          const card = document.createElement("div");
+          card.className = "card";
+          card.dataset.symbol = cards[index];
+          card.dataset.index = index;
+          card.innerText = "";
+          card.addEventListener("click", () => flipCard(card));
+          cell.appendChild(card);
         }
+        boardGrid.appendChild(cell);
+      }
+    }
 
-        function checkMatch() {
-            const [a, b] = flipped;
-            if (a.dataset.symbol === b.dataset.symbol) {
-                matched++;
-                revealedPhrase.innerText = phrase.slice(0, matched * 2);
-                if (matched * 2 >= phrase.replace(/ /g, "").length) {
-                    finalMessage.innerText = phrase;
-                }
-            } else {
-                a.classList.remove("flipped");
-                b.classList.remove("flipped");
-                a.innerText = "";
-                b.innerText = "";
-            }
-            flipped = [];
+    function flipCard(card) {
+      if (flipped.length === 2 || card.classList.contains("flipped")) return;
+      card.classList.add("flipped");
+      card.innerText = card.dataset.symbol;
+      flipped.push(card);
+
+      if (flipped.length === 2) {
+        setTimeout(checkMatch, 800);
+      }
+    }
+
+    function checkMatch() {
+      const [a, b] = flipped;
+      if (a.dataset.symbol === b.dataset.symbol) {
+        matched++;
+        revealedPhrase.innerText = phrase.slice(0, matched * 2);
+        if (matched * 2 >= phrase.replace(/ /g, "").length) {
+          showCelebration();
         }
-    </script>
-</body>
-</html>
+      } else {
+        a.classList.remove("flipped");
+        b.classList.remove("flipped");
+        a.innerText = "";
+        b.innerText = "";
+      }
+      flipped = [];
+    }
+
+    function showCelebration() {
+      const overlay = document.createElement("div");
+      overlay.className = "celebration";
 
