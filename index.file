@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Revelación del Bebé</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Juego de Revelación del Bebé</h1>
+    <div id="phrase">Frase: <span id="revealed-phrase"></span></div>
+    <div id="board"></div>
+    <script src="script.js"></script>
+</body>
+</html>
